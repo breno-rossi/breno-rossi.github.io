@@ -1,6 +1,6 @@
 ---
 layout: null
-title: Calculador de Notas - 9º Semestre
+title: Calculador de Notas - 10º Semestre
 permalink: /calculador-notas
 ---
 <!DOCTYPE html>
@@ -401,7 +401,7 @@ permalink: /calculador-notas
     </div>
     <div class="ra-result" style="margin-bottom:0.8rem"><span>RA2 (T4+ProvaI = /10)</span><span id="ia-ra2v">—</span></div>
 
-    <p class="label" style="margin-bottom:0.6rem;color:var(--accent)">RA3 — Busca Cega/Heurística + Trab 7 <span class="weight-hint">(peso 20%)</span></p>
+    <p class="label" style="margin-bottom:0.6rem;color:var(--accent)">RA3 — Busca Cega/Heurística + Prova II <span class="weight-hint">(peso 20%)</span></p>
     <div class="field-row">
       <div class="field">
         <label class="label">Trabalho 5 <span class="weight-hint">(máx 3,0)</span></label>
@@ -411,25 +411,25 @@ permalink: /calculador-notas
         <label class="label">Trabalho 6 <span class="weight-hint">(máx 3,0)</span></label>
         <input type="number" min="0" max="3" step="0.1" id="ia-t6" placeholder="0.0" oninput="calcIA()">
       </div>
-      <div class="field">
-        <label class="label">Trabalho 7 — RA3 <span class="weight-hint">(máx 4,0)</span></label>
-        <input type="number" min="0" max="4" step="0.1" id="ia-t7ra3" placeholder="0.0" oninput="calcIA()">
-      </div>
     </div>
-    <div class="ra-result" style="margin-bottom:0.8rem"><span>RA3 (T5+T6+T7 = /10)</span><span id="ia-ra3v">—</span></div>
+    <div class="ra-result" style="margin-bottom:0.8rem"><span>RA3 (T5+T6+S2 = /10)</span><span id="ia-ra3v">—</span></div>
 
     <p class="label" style="margin-bottom:0.6rem;color:var(--accent)">RA4 — Teoria dos Jogos/Alfa-Beta + Prova II <span class="weight-hint">(peso 30%)</span></p>
     <div class="field-row">
       <div class="field">
-        <label class="label">Trabalho 7 — RA4 <span class="weight-hint">(máx 6,0)</span></label>
-        <input type="number" min="0" max="6" step="0.1" id="ia-t7ra4" placeholder="0.0" oninput="calcIA()">
-      </div>
-      <div class="field">
-        <label class="label">Somativa II — RA4 <span class="weight-hint">(máx 4,0)</span></label>
-        <input type="number" min="0" max="4" step="0.1" id="ia-s2ra4" placeholder="0.0" oninput="calcIA()">
+        <label class="label">Trabalho 7 <span class="weight-hint">(máx 6,0)</span></label>
+        <input type="number" min="0" max="6" step="0.1" id="ia-t7" placeholder="0.0" oninput="calcIA()">
       </div>
     </div>
-    <div class="ra-result" style="margin-bottom:0.8rem"><span>RA4 (T7+ProvaII = /10)</span><span id="ia-ra4v">—</span></div>
+    <div class="ra-result" style="margin-bottom:0.8rem"><span>RA4 (T7+S2 = /10)</span><span id="ia-ra4v">—</span></div>
+
+    <p class="label" style="margin-bottom:0.6rem;color:var(--accent)">Somativa II <span class="weight-hint">(usada em RA3 e RA4)</span></p>
+    <div class="field-row">
+      <div class="field">
+        <label class="label">Somativa II <span class="weight-hint">(máx 4,0)</span></label>
+        <input type="number" min="0" max="4" step="0.1" id="ia-s2" placeholder="0.0" oninput="calcIA()">
+      </div>
+    </div>
 
     <hr class="divider">
     <div class="ra-result"><span>RA1 <span class="weight-hint">×30%</span></span><span id="ia-c1">—</span></div>
@@ -640,27 +640,30 @@ function setFinal(id, v) {
 
 // ---- IA ----
 function calcIA() {
-  // RA1: T1(2) + T2(2) + T3(2) + ProvaI-RA1(4) = 10
+  // RA1: T1(2) + T2(2) + T3(2) + Somativa1(4) = 10
   const t1=val('ia-t1'), t2=val('ia-t2'), t3=val('ia-t3'), s1r1=val('ia-s1ra1');
   const ra1Parts = [t1,t2,t3,s1r1].filter(x=>x!=null);
   const ra1 = ra1Parts.length ? ra1Parts.reduce((a,b)=>a+b,0) : NaN;
   document.getElementById('ia-ra1v').textContent = isNaN(ra1) ? '—' : ra1.toFixed(1)+'/10';
 
-  // RA2: T4(6) + ProvaI-RA2(4) = 10
+  // RA2: T4(6) + Somativa1(4) = 10
   const t4=val('ia-t4'), s1r2=val('ia-s1ra2');
   const ra2Parts = [t4,s1r2].filter(x=>x!=null);
   const ra2 = ra2Parts.length ? ra2Parts.reduce((a,b)=>a+b,0) : NaN;
   document.getElementById('ia-ra2v').textContent = isNaN(ra2) ? '—' : ra2.toFixed(1)+'/10';
 
-  // RA3: T5(3) + T6(3) + T7-RA3(4) = 10  (note: PDF shows T7 contributes to RA3 too)
-  const t5=val('ia-t5'), t6=val('ia-t6'), t7r3=val('ia-t7ra3');
-  const ra3Parts = [t5,t6,t7r3].filter(x=>x!=null);
+  // Somativa II é compartilhada entre RA3 e RA4
+  const s2=val('ia-s2');
+
+  // RA3: T5(3) + T6(3) + Somativa2(4) = 10
+  const t5=val('ia-t5'), t6=val('ia-t6');
+  const ra3Parts = [t5,t6,s2].filter(x=>x!=null);
   const ra3 = ra3Parts.length ? ra3Parts.reduce((a,b)=>a+b,0) : NaN;
   document.getElementById('ia-ra3v').textContent = isNaN(ra3) ? '—' : ra3.toFixed(1)+'/10';
 
-  // RA4: T7-RA4(6) + ProvaII(4) = 10
-  const t7r4=val('ia-t7ra4'), s2r4=val('ia-s2ra4');
-  const ra4Parts = [t7r4,s2r4].filter(x=>x!=null);
+  // RA4: T7(6) + Somativa2(4) = 10
+  const t7=val('ia-t7');
+  const ra4Parts = [t7,s2].filter(x=>x!=null);
   const ra4 = ra4Parts.length ? ra4Parts.reduce((a,b)=>a+b,0) : NaN;
   document.getElementById('ia-ra4v').textContent = isNaN(ra4) ? '—' : ra4.toFixed(1)+'/10';
 
@@ -791,8 +794,8 @@ function updateOverall() {
 const IDS = [
   'ia-t1','ia-t2','ia-t3','ia-s1ra1',
   'ia-t4','ia-s1ra2',
-  'ia-t5','ia-t6','ia-t7ra3',
-  'ia-t7ra4','ia-s2ra4',
+  'ia-t5','ia-t6',
+  'ia-t7','ia-s2',
   'eco-id11a','eco-id11b','eco-id12','eco-recra1',
   'eco-id21','eco-id21rp','eco-id22','eco-id22re',
   'gp-ra1','gp-ra2','gp-ra3',
