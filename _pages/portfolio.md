@@ -6,9 +6,9 @@ permalink: /portfolio
 
 ## Meus Projetos
 
-### Calculador de Notas - 9º Semestre
+### Calculador de Notas - 10º Período
 
-**Descrição:** Ferramenta interativa para calcular e acompanhar notas das disciplinas do 9º semestre de Engenharia de Computação (PUCPR). Inclui cálculo automático de médias ponderadas para IA, Engenharia Econômica, Gestão de Projetos e Otimização de Sistemas Lineares, com salvamento automático no navegador.
+**Descrição:** Ferramenta interativa para calcular e acompanhar notas das disciplinas do 10º período de Engenharia de Computação (PUCPR). Inclui cálculo automático de médias ponderadas para IA, Engenharia Econômica, Gestão de Projetos e Otimização de Sistemas Lineares, com salvamento automático no navegador.
 
 **Tecnologias:** HTML5, CSS3, JavaScript (Vanilla)
 
