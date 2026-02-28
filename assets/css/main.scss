@@ -8,6 +8,33 @@
 	display:inline;
 }
 
+/* Custom styles for author name in post page */
+.author-name-link {
+	font-size: 1.25rem !important;
+	font-weight: 500 !important;
+	display: block;
+	margin-bottom: 0.25rem;
+}
+
+.post-top-meta {
+	margin-bottom: 1.5rem !important;
+}
+
+.post-top-meta .col-md-3,
+.post-top-meta .col-lg-2 {
+	padding-right: 0 !important;
+}
+
+.post-top-meta .col-md-9,
+.post-top-meta .col-lg-10 {
+	padding-left: 0.75rem !important;
+}
+
+.post-top-meta .row {
+	margin-left: 0 !important;
+	margin-right: 0 !important;
+}
+
 // Import partials from `sass_dir` (defaults to `_sass`)
 @import
 	"syntax",

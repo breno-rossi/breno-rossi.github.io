@@ -1,0 +1,831 @@
+---
+layout: null
+title: Calculador de Notas - 9º Semestre
+permalink: /calculador-notas
+---
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Calculador de Notas — 9º Semestre</title>
+<link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Syne:wght@400;600;800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0d0d0f;
+    --surface: #141418;
+    --surface2: #1c1c22;
+    --border: #2a2a35;
+    --accent: #7fff6e;
+    --accent2: #4fc3f7;
+    --accent3: #ff6b6b;
+    --accent4: #ffd166;
+    --text: #e8e8f0;
+    --muted: #6b6b80;
+    --pass: #7fff6e;
+    --fail: #ff6b6b;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Syne', sans-serif;
+    min-height: 100vh;
+    padding: 2rem 1rem;
+    background-image:
+      radial-gradient(ellipse 60% 40% at 80% 10%, rgba(127,255,110,0.05) 0%, transparent 60%),
+      radial-gradient(ellipse 40% 60% at 20% 80%, rgba(79,195,247,0.04) 0%, transparent 60%);
+  }
+
+  header {
+    text-align: center;
+    margin-bottom: 3rem;
+  }
+
+  .badge {
+    display: inline-block;
+    font-family: 'Space Mono', monospace;
+    font-size: 0.65rem;
+    letter-spacing: 0.2em;
+    color: var(--accent);
+    border: 1px solid var(--accent);
+    padding: 0.25rem 0.75rem;
+    border-radius: 2px;
+    margin-bottom: 1rem;
+    opacity: 0.8;
+  }
+
+  h1 {
+    font-size: clamp(1.8rem, 5vw, 3rem);
+    font-weight: 800;
+    line-height: 1;
+    letter-spacing: -0.02em;
+  }
+
+  h1 span { color: var(--accent); }
+
+  .subtitle {
+    color: var(--muted);
+    font-family: 'Space Mono', monospace;
+    font-size: 0.75rem;
+    margin-top: 0.75rem;
+    letter-spacing: 0.05em;
+  }
+
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+    gap: 1.5rem;
+    max-width: 1200px;
+    margin: 0 auto 2rem;
+  }
+
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 1.5rem;
+    position: relative;
+    overflow: hidden;
+    transition: border-color 0.3s;
+  }
+
+  .card:hover { border-color: var(--card-accent, var(--accent)); }
+
+  .card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 3px;
+    background: var(--card-accent, var(--accent));
+  }
+
+  .card-1 { --card-accent: #7fff6e; }
+  .card-2 { --card-accent: #4fc3f7; }
+  .card-3 { --card-accent: #ff6b6b; }
+  .card-4 { --card-accent: #ffd166; }
+
+  .card-header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    margin-bottom: 1.5rem;
+    gap: 1rem;
+  }
+
+  .card-title {
+    font-size: 0.95rem;
+    font-weight: 600;
+    line-height: 1.3;
+    flex: 1;
+  }
+
+  .final-badge {
+    font-family: 'Space Mono', monospace;
+    font-size: 1.4rem;
+    font-weight: 700;
+    color: var(--card-accent, var(--accent));
+    text-align: right;
+    white-space: nowrap;
+  }
+
+  .status-dot {
+    display: inline-block;
+    width: 8px; height: 8px;
+    border-radius: 50%;
+    margin-left: 6px;
+    vertical-align: middle;
+  }
+
+  .label {
+    font-family: 'Space Mono', monospace;
+    font-size: 0.65rem;
+    color: var(--muted);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    margin-bottom: 0.3rem;
+    display: block;
+  }
+
+  .field {
+    margin-bottom: 1rem;
+  }
+
+  .field-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.75rem;
+  }
+
+  input[type=number] {
+    width: 100%;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    color: var(--text);
+    font-family: 'Space Mono', monospace;
+    font-size: 0.85rem;
+    padding: 0.5rem 0.75rem;
+    transition: border-color 0.2s;
+    -moz-appearance: textfield;
+  }
+
+  input[type=number]::-webkit-outer-spin-button,
+  input[type=number]::-webkit-inner-spin-button { -webkit-appearance: none; }
+
+  input[type=number]:focus {
+    outline: none;
+    border-color: var(--card-accent, var(--accent));
+  }
+
+  .divider {
+    border: none;
+    border-top: 1px solid var(--border);
+    margin: 1rem 0;
+  }
+
+  .ra-result {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-family: 'Space Mono', monospace;
+    font-size: 0.8rem;
+    color: var(--muted);
+    margin-bottom: 0.4rem;
+  }
+
+  .ra-result span:last-child {
+    color: var(--text);
+    font-weight: 700;
+  }
+
+  .weight-hint {
+    font-size: 0.6rem;
+    color: var(--muted);
+    margin-left: 0.3rem;
+    opacity: 0.7;
+  }
+
+  .final-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 0.75rem;
+    padding-top: 0.75rem;
+    border-top: 1px solid var(--border);
+  }
+
+  .final-label {
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: var(--muted);
+  }
+
+  .final-value {
+    font-family: 'Space Mono', monospace;
+    font-size: 1.1rem;
+    font-weight: 700;
+  }
+
+  .pass { color: var(--pass); }
+  .fail { color: var(--fail); }
+  .neutral { color: var(--muted); }
+
+  .overall {
+    max-width: 1200px;
+    margin: 0 auto 3rem;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 1.5rem 2rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 1rem;
+  }
+
+  .overall-label {
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--muted);
+  }
+
+  .overall-label strong {
+    display: block;
+    font-size: 1.3rem;
+    color: var(--text);
+  }
+
+  .overall-grades {
+    display: flex;
+    gap: 1.5rem;
+    flex-wrap: wrap;
+  }
+
+  .ov-item {
+    text-align: center;
+  }
+
+  .ov-item .ov-val {
+    font-family: 'Space Mono', monospace;
+    font-size: 1.5rem;
+    font-weight: 700;
+    display: block;
+  }
+
+  .ov-item .ov-name {
+    font-size: 0.65rem;
+    color: var(--muted);
+    font-family: 'Space Mono', monospace;
+    letter-spacing: 0.05em;
+  }
+
+  .btn-clear {
+    background: transparent;
+    border: 1px solid var(--border);
+    color: var(--muted);
+    font-family: 'Space Mono', monospace;
+    font-size: 0.7rem;
+    padding: 0.5rem 1rem;
+    border-radius: 6px;
+    cursor: pointer;
+    letter-spacing: 0.05em;
+    transition: all 0.2s;
+    max-width: 1200px;
+    margin: 0 auto 1rem;
+    display: block;
+  }
+
+  .btn-clear:hover {
+    border-color: var(--accent3);
+    color: var(--accent3);
+  }
+
+  .formula-hint {
+    font-family: 'Space Mono', monospace;
+    font-size: 0.65rem;
+    color: var(--muted);
+    background: var(--surface2);
+    border-radius: 4px;
+    padding: 0.4rem 0.6rem;
+    margin-bottom: 1rem;
+    letter-spacing: 0.02em;
+  }
+
+  .save-indicator {
+    font-family: 'Space Mono', monospace;
+    font-size: 0.6rem;
+    color: var(--accent);
+    text-align: center;
+    opacity: 0;
+    transition: opacity 0.4s;
+    margin-top: -1rem;
+    margin-bottom: 1rem;
+  }
+  .save-indicator.show { opacity: 1; }
+
+  .back-link {
+    display: inline-block;
+    font-family: 'Space Mono', monospace;
+    font-size: 0.75rem;
+    color: var(--accent);
+    text-decoration: none;
+    margin-bottom: 1rem;
+    opacity: 0.8;
+    transition: opacity 0.2s;
+  }
+  .back-link:hover { opacity: 1; }
+
+  @media (max-width: 600px) {
+    .overall { flex-direction: column; }
+    .field-row { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <a href="{{ site.baseurl }}/portfolio" class="back-link">← Voltar ao Portfólio</a>
+  <div class="badge">PUCPR · ENG. COMPUTAÇÃO · 9º SEM</div>
+  <h1>Calculador de <span>Notas</span></h1>
+  <p class="subtitle">// dados salvos automaticamente no navegador</p>
+</header>
+
+<div class="save-indicator" id="saveIndicator">✓ salvo</div>
+
+<div class="grid">
+
+  <!-- CARD 1: Inteligência Artificial -->
+  <div class="card card-1">
+    <div class="card-header">
+      <div class="card-title">Inteligência Artificial e Computacional</div>
+      <div class="final-badge" id="ia-final">—</div>
+    </div>
+
+    <div class="formula-hint">Nota = 0.30·RA1 + 0.20·RA2 + 0.20·RA3 + 0.30·RA4</div>
+
+    <p class="label" style="margin-bottom:0.6rem;color:var(--accent)">RA1 — Modelos Cognitivos + Prova I <span class="weight-hint">(peso 30%)</span></p>
+    <div class="field-row">
+      <div class="field">
+        <label class="label">Trabalho 1 <span class="weight-hint">(máx 2,0)</span></label>
+        <input type="number" min="0" max="2" step="0.1" id="ia-t1" placeholder="0.0" oninput="calcIA()">
+      </div>
+      <div class="field">
+        <label class="label">Trabalho 2 <span class="weight-hint">(máx 2,0)</span></label>
+        <input type="number" min="0" max="2" step="0.1" id="ia-t2" placeholder="0.0" oninput="calcIA()">
+      </div>
+      <div class="field">
+        <label class="label">Trabalho 3 <span class="weight-hint">(máx 2,0)</span></label>
+        <input type="number" min="0" max="2" step="0.1" id="ia-t3" placeholder="0.0" oninput="calcIA()">
+      </div>
+      <div class="field">
+        <label class="label">Somativa I — RA1 <span class="weight-hint">(máx 4,0)</span></label>
+        <input type="number" min="0" max="4" step="0.1" id="ia-s1ra1" placeholder="0.0" oninput="calcIA()">
+      </div>
+    </div>
+    <div class="ra-result" style="margin-bottom:0.8rem"><span>RA1 (T1+T2+T3+ProvaI = /10)</span><span id="ia-ra1v">—</span></div>
+
+    <p class="label" style="margin-bottom:0.6rem;color:var(--accent)">RA2 — Técnicas Evolucionárias + Prova I <span class="weight-hint">(peso 20%)</span></p>
+    <div class="field-row">
+      <div class="field">
+        <label class="label">Trabalho 4 <span class="weight-hint">(máx 6,0)</span></label>
+        <input type="number" min="0" max="6" step="0.1" id="ia-t4" placeholder="0.0" oninput="calcIA()">
+      </div>
+      <div class="field">
+        <label class="label">Somativa I — RA2 <span class="weight-hint">(máx 4,0)</span></label>
+        <input type="number" min="0" max="4" step="0.1" id="ia-s1ra2" placeholder="0.0" oninput="calcIA()">
+      </div>
+    </div>
+    <div class="ra-result" style="margin-bottom:0.8rem"><span>RA2 (T4+ProvaI = /10)</span><span id="ia-ra2v">—</span></div>
+
+    <p class="label" style="margin-bottom:0.6rem;color:var(--accent)">RA3 — Busca Cega/Heurística + Trab 7 <span class="weight-hint">(peso 20%)</span></p>
+    <div class="field-row">
+      <div class="field">
+        <label class="label">Trabalho 5 <span class="weight-hint">(máx 3,0)</span></label>
+        <input type="number" min="0" max="3" step="0.1" id="ia-t5" placeholder="0.0" oninput="calcIA()">
+      </div>
+      <div class="field">
+        <label class="label">Trabalho 6 <span class="weight-hint">(máx 3,0)</span></label>
+        <input type="number" min="0" max="3" step="0.1" id="ia-t6" placeholder="0.0" oninput="calcIA()">
+      </div>
+      <div class="field">
+        <label class="label">Trabalho 7 — RA3 <span class="weight-hint">(máx 4,0)</span></label>
+        <input type="number" min="0" max="4" step="0.1" id="ia-t7ra3" placeholder="0.0" oninput="calcIA()">
+      </div>
+    </div>
+    <div class="ra-result" style="margin-bottom:0.8rem"><span>RA3 (T5+T6+T7 = /10)</span><span id="ia-ra3v">—</span></div>
+
+    <p class="label" style="margin-bottom:0.6rem;color:var(--accent)">RA4 — Teoria dos Jogos/Alfa-Beta + Prova II <span class="weight-hint">(peso 30%)</span></p>
+    <div class="field-row">
+      <div class="field">
+        <label class="label">Trabalho 7 — RA4 <span class="weight-hint">(máx 6,0)</span></label>
+        <input type="number" min="0" max="6" step="0.1" id="ia-t7ra4" placeholder="0.0" oninput="calcIA()">
+      </div>
+      <div class="field">
+        <label class="label">Somativa II — RA4 <span class="weight-hint">(máx 4,0)</span></label>
+        <input type="number" min="0" max="4" step="0.1" id="ia-s2ra4" placeholder="0.0" oninput="calcIA()">
+      </div>
+    </div>
+    <div class="ra-result" style="margin-bottom:0.8rem"><span>RA4 (T7+ProvaII = /10)</span><span id="ia-ra4v">—</span></div>
+
+    <hr class="divider">
+    <div class="ra-result"><span>RA1 <span class="weight-hint">×30%</span></span><span id="ia-c1">—</span></div>
+    <div class="ra-result"><span>RA2 <span class="weight-hint">×20%</span></span><span id="ia-c2">—</span></div>
+    <div class="ra-result"><span>RA3 <span class="weight-hint">×20%</span></span><span id="ia-c3">—</span></div>
+    <div class="ra-result"><span>RA4 <span class="weight-hint">×30%</span></span><span id="ia-c4">—</span></div>
+
+    <div class="final-row">
+      <span class="final-label">Média Final</span>
+      <span class="final-value" id="ia-nota">—</span>
+    </div>
+  </div>
+
+  <!-- CARD 2: Engenharia Econômica -->
+  <div class="card card-2">
+    <div class="card-header">
+      <div class="card-title">Engenharia Econômica</div>
+      <div class="final-badge" id="eco-final">—</div>
+    </div>
+
+    <div class="formula-hint">Resultado = média pond. IDs do RA1 (50%) + média pond. IDs do RA2 (50%)</div>
+
+    <p class="label" style="margin-bottom:0.6rem;color:var(--accent2)">RA1 — EP-04-01 (peso 50%)</p>
+    <div class="field-row">
+      <div class="field">
+        <label class="label">ID1.1 — Avaliativa 1<span class="weight-hint">(10%)</span></label>
+        <input type="number" min="0" max="10" step="0.1" id="eco-id11a" placeholder="0.0" oninput="calcEco()">
+      </div>
+      <div class="field">
+        <label class="label">ID1.1 — Avaliativa 2<span class="weight-hint">(20%)</span></label>
+        <input type="number" min="0" max="10" step="0.1" id="eco-id11b" placeholder="0.0" oninput="calcEco()">
+      </div>
+      <div class="field">
+        <label class="label">ID1.2 — Avaliativa 3<span class="weight-hint">(70%)</span></label>
+        <input type="number" min="0" max="10" step="0.1" id="eco-id12" placeholder="0.0" oninput="calcEco()">
+      </div>
+      <div class="field">
+        <label class="label">Recuperação Estendida RA1</label>
+        <input type="number" min="0" max="10" step="0.1" id="eco-recra1" placeholder="0.0" oninput="calcEco()">
+      </div>
+    </div>
+
+    <p class="label" style="margin-bottom:0.6rem;margin-top:0.5rem;color:var(--accent2)">RA2 — EP-04-06 (peso 50%)</p>
+    <div class="field-row">
+      <div class="field">
+        <label class="label">ID2.1 — Avaliativa 1<span class="weight-hint">(30%)</span></label>
+        <input type="number" min="0" max="10" step="0.1" id="eco-id21" placeholder="0.0" oninput="calcEco()">
+      </div>
+      <div class="field">
+        <label class="label">ID2.1 — Recuper. Parcial<span class="weight-hint">(30%)</span></label>
+        <input type="number" min="0" max="10" step="0.1" id="eco-id21rp" placeholder="0.0" oninput="calcEco()">
+      </div>
+      <div class="field">
+        <label class="label">ID2.2 — Avaliativa 1<span class="weight-hint">(70%)</span></label>
+        <input type="number" min="0" max="10" step="0.1" id="eco-id22" placeholder="0.0" oninput="calcEco()">
+      </div>
+      <div class="field">
+        <label class="label">ID2.2 — Recuper. Estendida<span class="weight-hint">(70%)</span></label>
+        <input type="number" min="0" max="10" step="0.1" id="eco-id22re" placeholder="0.0" oninput="calcEco()">
+      </div>
+    </div>
+
+    <hr class="divider">
+    <div class="ra-result"><span>RA1 (nota)</span><span id="eco-ra1v">—</span></div>
+    <div class="ra-result"><span>RA2 (nota)</span><span id="eco-ra2v">—</span></div>
+    <div class="final-row">
+      <span class="final-label">Resultado Final</span>
+      <span class="final-value" id="eco-nota">—</span>
+    </div>
+  </div>
+
+  <!-- CARD 3: Gestão de Projetos TI -->
+  <div class="card card-3">
+    <div class="card-header">
+      <div class="card-title">Gestão de Projetos de TI</div>
+      <div class="final-badge" id="gp-final">—</div>
+    </div>
+
+    <div class="formula-hint">Nota = (30·RA1 + 50·RA2 + 30·RA3) / 100</div>
+
+    <div class="field">
+      <label class="label">RA1<span class="weight-hint">(×30)</span></label>
+      <input type="number" min="0" max="10" step="0.1" id="gp-ra1" placeholder="0.0" oninput="calcGP()">
+    </div>
+    <div class="field">
+      <label class="label">RA2<span class="weight-hint">(×50)</span></label>
+      <input type="number" min="0" max="10" step="0.1" id="gp-ra2" placeholder="0.0" oninput="calcGP()">
+    </div>
+    <div class="field">
+      <label class="label">RA3<span class="weight-hint">(×30)</span></label>
+      <input type="number" min="0" max="10" step="0.1" id="gp-ra3" placeholder="0.0" oninput="calcGP()">
+    </div>
+
+    <hr class="divider">
+    <div class="ra-result"><span>30·RA1</span><span id="gp-c1">—</span></div>
+    <div class="ra-result"><span>50·RA2</span><span id="gp-c2">—</span></div>
+    <div class="ra-result"><span>30·RA3</span><span id="gp-c3">—</span></div>
+    <div class="ra-result"><span>Soma</span><span id="gp-sum">—</span></div>
+
+    <div class="final-row">
+      <span class="final-label">Nota Final</span>
+      <span class="final-value" id="gp-nota">—</span>
+    </div>
+  </div>
+
+  <!-- CARD 4: Otimização de Sistemas Lineares -->
+  <div class="card card-4">
+    <div class="card-header">
+      <div class="card-title">Otimização de Sistemas Lineares</div>
+      <div class="final-badge" id="osl-final">—</div>
+    </div>
+
+    <div class="formula-hint">Média = soma ponderada dos 6 itens (total 10,0)</div>
+
+    <div class="field">
+      <label class="label">Avaliação SIMPLEX<span class="weight-hint">(2,5)</span></label>
+      <input type="number" min="0" max="2.5" step="0.1" id="osl-1" placeholder="0.0" oninput="calcOSL()">
+    </div>
+    <div class="field">
+      <label class="label">1ª Lista de Exercícios<span class="weight-hint">(1,0)</span></label>
+      <input type="number" min="0" max="1" step="0.05" id="osl-2" placeholder="0.0" oninput="calcOSL()">
+    </div>
+    <div class="field">
+      <label class="label">Avaliação Transporte<span class="weight-hint">(2,5)</span></label>
+      <input type="number" min="0" max="2.5" step="0.1" id="osl-3" placeholder="0.0" oninput="calcOSL()">
+    </div>
+    <div class="field">
+      <label class="label">2ª Lista de Exercícios<span class="weight-hint">(1,0)</span></label>
+      <input type="number" min="0" max="1" step="0.05" id="osl-4" placeholder="0.0" oninput="calcOSL()">
+    </div>
+    <div class="field">
+      <label class="label">TDE<span class="weight-hint">(1,5)</span></label>
+      <input type="number" min="0" max="1.5" step="0.1" id="osl-5" placeholder="0.0" oninput="calcOSL()">
+    </div>
+    <div class="field">
+      <label class="label">Trabalho Prático com Relatório<span class="weight-hint">(1,5)</span></label>
+      <input type="number" min="0" max="1.5" step="0.1" id="osl-6" placeholder="0.0" oninput="calcOSL()">
+    </div>
+
+    <div class="final-row">
+      <span class="final-label">Média Final (RA1)</span>
+      <span class="final-value" id="osl-nota">—</span>
+    </div>
+  </div>
+
+</div>
+
+<!-- Overall summary -->
+<div class="overall">
+  <div class="overall-label">
+    Resumo do Semestre
+    <strong id="overall-status">Insira as notas acima</strong>
+  </div>
+  <div class="overall-grades">
+    <div class="ov-item">
+      <span class="ov-val card-1" id="ov-ia" style="color:#7fff6e">—</span>
+      <span class="ov-name">INT. ART.</span>
+    </div>
+    <div class="ov-item">
+      <span class="ov-val" id="ov-eco" style="color:#4fc3f7">—</span>
+      <span class="ov-name">ENG. ECO.</span>
+    </div>
+    <div class="ov-item">
+      <span class="ov-val" id="ov-gp" style="color:#ff6b6b">—</span>
+      <span class="ov-name">GEST. PROJ.</span>
+    </div>
+    <div class="ov-item">
+      <span class="ov-val" id="ov-osl" style="color:#ffd166">—</span>
+      <span class="ov-name">OTIM. SIS.</span>
+    </div>
+  </div>
+</div>
+
+<button class="btn-clear" onclick="clearAll()">↺ Limpar todos os dados</button>
+
+<script>
+const STORAGE_KEY = 'breno_notas_9sem';
+const PASS = 6.0;
+
+function fmt(v) {
+  return isNaN(v) ? '—' : v.toFixed(2);
+}
+
+function statusClass(v) {
+  if (isNaN(v)) return 'neutral';
+  return v >= PASS ? 'pass' : 'fail';
+}
+
+function val(id) {
+  const v = parseFloat(document.getElementById(id).value);
+  return isNaN(v) ? null : v;
+}
+
+function setResult(id, v, extraClass) {
+  const el = document.getElementById(id);
+  el.textContent = fmt(v);
+  el.className = 'final-value ' + (extraClass || statusClass(v));
+}
+
+function setSmall(id, v) {
+  document.getElementById(id).textContent = isNaN(v) ? '—' : v.toFixed(3);
+}
+
+function setFinal(id, v) {
+  const el = document.getElementById(id);
+  el.textContent = isNaN(v) ? '—' : v.toFixed(1);
+}
+
+// ---- IA ----
+function calcIA() {
+  // RA1: T1(2) + T2(2) + T3(2) + ProvaI-RA1(4) = 10
+  const t1=val('ia-t1'), t2=val('ia-t2'), t3=val('ia-t3'), s1r1=val('ia-s1ra1');
+  const ra1Parts = [t1,t2,t3,s1r1].filter(x=>x!=null);
+  const ra1 = ra1Parts.length ? ra1Parts.reduce((a,b)=>a+b,0) : NaN;
+  document.getElementById('ia-ra1v').textContent = isNaN(ra1) ? '—' : ra1.toFixed(1)+'/10';
+
+  // RA2: T4(6) + ProvaI-RA2(4) = 10
+  const t4=val('ia-t4'), s1r2=val('ia-s1ra2');
+  const ra2Parts = [t4,s1r2].filter(x=>x!=null);
+  const ra2 = ra2Parts.length ? ra2Parts.reduce((a,b)=>a+b,0) : NaN;
+  document.getElementById('ia-ra2v').textContent = isNaN(ra2) ? '—' : ra2.toFixed(1)+'/10';
+
+  // RA3: T5(3) + T6(3) + T7-RA3(4) = 10  (note: PDF shows T7 contributes to RA3 too)
+  const t5=val('ia-t5'), t6=val('ia-t6'), t7r3=val('ia-t7ra3');
+  const ra3Parts = [t5,t6,t7r3].filter(x=>x!=null);
+  const ra3 = ra3Parts.length ? ra3Parts.reduce((a,b)=>a+b,0) : NaN;
+  document.getElementById('ia-ra3v').textContent = isNaN(ra3) ? '—' : ra3.toFixed(1)+'/10';
+
+  // RA4: T7-RA4(6) + ProvaII(4) = 10
+  const t7r4=val('ia-t7ra4'), s2r4=val('ia-s2ra4');
+  const ra4Parts = [t7r4,s2r4].filter(x=>x!=null);
+  const ra4 = ra4Parts.length ? ra4Parts.reduce((a,b)=>a+b,0) : NaN;
+  document.getElementById('ia-ra4v').textContent = isNaN(ra4) ? '—' : ra4.toFixed(1)+'/10';
+
+  const c1 = !isNaN(ra1) ? ra1 * 0.30 : NaN;
+  const c2 = !isNaN(ra2) ? ra2 * 0.20 : NaN;
+  const c3 = !isNaN(ra3) ? ra3 * 0.20 : NaN;
+  const c4 = !isNaN(ra4) ? ra4 * 0.30 : NaN;
+  setSmall('ia-c1', c1); setSmall('ia-c2', c2);
+  setSmall('ia-c3', c3); setSmall('ia-c4', c4);
+
+  const contribs = [c1,c2,c3,c4].filter(x => !isNaN(x));
+  const nota = contribs.length ? contribs.reduce((a,b)=>a+b,0) : NaN;
+  setResult('ia-nota', nota);
+  setFinal('ia-final', nota);
+  setOV('ov-ia', nota);
+  save(); updateOverall();
+}
+
+// ---- ECO ----
+function calcEco() {
+  const id11a = val('eco-id11a'), id11b = val('eco-id11b'),
+        id12  = val('eco-id12'),  recra1 = val('eco-recra1');
+  const id21   = val('eco-id21'),  id21rp = val('eco-id21rp'),
+        id22   = val('eco-id22'),  id22re = val('eco-id22re');
+
+  // RA1: ID1.1 tem partes (10%+20% = 30%), ID1.2 = 70%
+  // ID1.1 nota = (id11a*10 + id11b*20)/30 se ambos presentes
+  let id11;
+  if (id11a!=null && id11b!=null) id11 = (id11a*10 + id11b*20)/30;
+  else if (id11a!=null) id11 = id11a;
+  else if (id11b!=null) id11 = id11b;
+  else id11 = null;
+
+  let ra1;
+  if (id11!=null && id12!=null) ra1 = id11*0.30 + id12*0.70;
+  else if (id11!=null) ra1 = id11*0.30;
+  else if (id12!=null) ra1 = id12*0.70;
+  if (recra1 != null && !isNaN(ra1)) ra1 = Math.max(ra1, recra1);
+  else if (recra1 != null) ra1 = recra1;
+
+  // RA2: ID2.1 = 30%, ID2.2 = 70%
+  let final21 = id21, final22 = id22;
+  if (id21rp != null && id21 != null) final21 = Math.max(id21, id21rp);
+  else if (id21rp != null) final21 = id21rp;
+  if (id22re != null && id22 != null) final22 = Math.max(id22, id22re);
+  else if (id22re != null) final22 = id22re;
+
+  let ra2;
+  if (final21!=null && final22!=null) ra2 = final21*0.30 + final22*0.70;
+  else if (final21!=null) ra2 = final21*0.30;
+  else if (final22!=null) ra2 = final22*0.70;
+
+  document.getElementById('eco-ra1v').textContent = ra1!=null ? ra1.toFixed(3) : '—';
+  document.getElementById('eco-ra2v').textContent = ra2!=null ? ra2.toFixed(3) : '—';
+
+  let nota;
+  if (ra1!=null && ra2!=null) nota = ra1*0.50 + ra2*0.50;
+  else if (ra1!=null) nota = ra1*0.50;
+  else if (ra2!=null) nota = ra2*0.50;
+
+  setResult('eco-nota', nota);
+  setFinal('eco-final', nota);
+  setOV('ov-eco', nota);
+  save(); updateOverall();
+}
+
+// ---- GP ----
+function calcGP() {
+  const r1 = val('gp-ra1'), r2 = val('gp-ra2'), r3 = val('gp-ra3');
+  const c1 = r1!=null ? r1*30 : NaN;
+  const c2 = r2!=null ? r2*50 : NaN;
+  const c3 = r3!=null ? r3*30 : NaN;
+  const sum = [c1,c2,c3].filter(x=>!isNaN(x)).reduce((a,b)=>a+b,0);
+  const nota = (c1+c2+c3) / 100;
+
+  document.getElementById('gp-c1').textContent = isNaN(c1) ? '—' : c1.toFixed(1);
+  document.getElementById('gp-c2').textContent = isNaN(c2) ? '—' : c2.toFixed(1);
+  document.getElementById('gp-c3').textContent = isNaN(c3) ? '—' : c3.toFixed(1);
+  document.getElementById('gp-sum').textContent = isNaN(sum) ? '—' : sum.toFixed(1);
+
+  const finalNota = (!isNaN(c1) && !isNaN(c2) && !isNaN(c3)) ? nota : NaN;
+  setResult('gp-nota', finalNota);
+  setFinal('gp-final', finalNota);
+  setOV('ov-gp', finalNota);
+  save(); updateOverall();
+}
+
+// ---- OSL ----
+function calcOSL() {
+  const v1=val('osl-1'), v2=val('osl-2'), v3=val('osl-3'),
+        v4=val('osl-4'), v5=val('osl-5'), v6=val('osl-6');
+  // Each field is already in its weight (e.g. max 2.5 for simplex)
+  const parts = [v1,v2,v3,v4,v5,v6].filter(x=>x!=null);
+  const nota = parts.length ? parts.reduce((a,b)=>a+b,0) : NaN;
+  setResult('osl-nota', nota);
+  setFinal('osl-final', nota);
+  setOV('ov-osl', nota);
+  save(); updateOverall();
+}
+
+function setOV(id, v) {
+  const el = document.getElementById(id);
+  el.textContent = isNaN(v) || v===undefined ? '—' : v.toFixed(1);
+  el.style.opacity = isNaN(v) ? '0.4' : '1';
+}
+
+function updateOverall() {
+  const scores = ['ov-ia','ov-eco','ov-gp','ov-osl']
+    .map(id => parseFloat(document.getElementById(id).textContent))
+    .filter(x => !isNaN(x));
+  const el = document.getElementById('overall-status');
+  if (!scores.length) { el.textContent = 'Insira as notas acima'; el.className=''; return; }
+  const passing = scores.filter(x=>x>=PASS).length;
+  const failing = scores.filter(x=>x<PASS).length;
+  if (failing === 0 && scores.length === 4) {
+    el.textContent = '✓ Aprovado em todas as 4 disciplinas!';
+    el.style.color = 'var(--pass)';
+  } else if (failing > 0) {
+    el.textContent = `⚠ ${failing} disciplina${failing>1?'s':''} abaixo de 6,0`;
+    el.style.color = 'var(--fail)';
+  } else {
+    el.textContent = `${passing} de 4 disciplinas calculadas`;
+    el.style.color = 'var(--accent2)';
+  }
+}
+
+// ---- STORAGE ----
+const IDS = [
+  'ia-t1','ia-t2','ia-t3','ia-s1ra1',
+  'ia-t4','ia-s1ra2',
+  'ia-t5','ia-t6','ia-t7ra3',
+  'ia-t7ra4','ia-s2ra4',
+  'eco-id11a','eco-id11b','eco-id12','eco-recra1',
+  'eco-id21','eco-id21rp','eco-id22','eco-id22re',
+  'gp-ra1','gp-ra2','gp-ra3',
+  'osl-1','osl-2','osl-3','osl-4','osl-5','osl-6'
+];
+
+function save() {
+  const data = {};
+  IDS.forEach(id => { data[id] = document.getElementById(id).value; });
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+  const ind = document.getElementById('saveIndicator');
+  ind.classList.add('show');
+  setTimeout(() => ind.classList.remove('show'), 1200);
+}
+
+function load() {
+  try {
+    const data = JSON.parse(localStorage.getItem(STORAGE_KEY) || '{}');
+    IDS.forEach(id => {
+      if (data[id]) document.getElementById(id).value = data[id];
+    });
+  } catch(e) {}
+  calcIA(); calcEco(); calcGP(); calcOSL();
+}
+
+function clearAll() {
+  if (!confirm('Limpar todos os dados salvos?')) return;
+  localStorage.removeItem(STORAGE_KEY);
+  IDS.forEach(id => document.getElementById(id).value = '');
+  calcIA(); calcEco(); calcGP(); calcOSL();
+}
+
+load();
+</script>
+</body>
+</html>
