@@ -106,6 +106,7 @@ permalink: /calculador-notas
   .card-2 { --card-accent: #4fc3f7; }
   .card-3 { --card-accent: #ff6b6b; }
   .card-4 { --card-accent: #ffd166; }
+  .card-5 { --card-accent: #b388ff; }
 
   .card-header {
     display: flex;
@@ -575,6 +576,34 @@ permalink: /calculador-notas
     </div>
   </div>
 
+  <!-- CARD 5: Resposta a Incidentes de CyberSegurança -->
+  <div class="card card-5">
+    <div class="card-header">
+      <div class="card-title">Resposta a Incidentes de CyberSegurança</div>
+      <div class="final-badge" id="ric-final">—</div>
+    </div>
+
+    <div class="formula-hint">Nota = 0.50·RA1 + 0.50·RA2</div>
+
+    <div class="field">
+      <label class="label">RA1<span class="weight-hint">(×50%)</span></label>
+      <input type="number" min="0" max="10" step="0.1" id="ric-ra1" placeholder="0.0" oninput="calcRIC()">
+    </div>
+    <div class="field">
+      <label class="label">RA2<span class="weight-hint">(×50%)</span></label>
+      <input type="number" min="0" max="10" step="0.1" id="ric-ra2" placeholder="0.0" oninput="calcRIC()">
+    </div>
+
+    <hr class="divider">
+    <div class="ra-result"><span>RA1 <span class="weight-hint">×50%</span></span><span id="ric-c1">—</span></div>
+    <div class="ra-result"><span>RA2 <span class="weight-hint">×50%</span></span><span id="ric-c2">—</span></div>
+
+    <div class="final-row">
+      <span class="final-label">Nota Final</span>
+      <span class="final-value" id="ric-nota">—</span>
+    </div>
+  </div>
+
 </div>
 
 <!-- Overall summary -->
@@ -599,6 +628,10 @@ permalink: /calculador-notas
     <div class="ov-item">
       <span class="ov-val" id="ov-osl" style="color:#ffd166">—</span>
       <span class="ov-name">OTIM. SIS.</span>
+    </div>
+    <div class="ov-item">
+      <span class="ov-val" id="ov-ric" style="color:#b388ff">—</span>
+      <span class="ov-name">RESP. INC.</span>
     </div>
   </div>
 </div>
@@ -761,6 +794,24 @@ function calcOSL() {
   save(); updateOverall();
 }
 
+// ---- RIC (Resposta a Incidentes de CyberSegurança) ----
+function calcRIC() {
+  const r1 = val('ric-ra1'), r2 = val('ric-ra2');
+  const c1 = r1!=null ? r1*0.50 : NaN;
+  const c2 = r2!=null ? r2*0.50 : NaN;
+
+  setSmall('ric-c1', c1);
+  setSmall('ric-c2', c2);
+
+  const contribs = [c1,c2].filter(x => !isNaN(x));
+  const nota = contribs.length ? contribs.reduce((a,b)=>a+b,0) : NaN;
+
+  setResult('ric-nota', nota);
+  setFinal('ric-final', nota);
+  setOV('ov-ric', nota);
+  save(); updateOverall();
+}
+
 function setOV(id, v) {
   const el = document.getElementById(id);
   el.textContent = isNaN(v) || v===undefined ? '—' : v.toFixed(1);
@@ -768,21 +819,21 @@ function setOV(id, v) {
 }
 
 function updateOverall() {
-  const scores = ['ov-ia','ov-eco','ov-gp','ov-osl']
+  const scores = ['ov-ia','ov-eco','ov-gp','ov-osl','ov-ric']
     .map(id => parseFloat(document.getElementById(id).textContent))
     .filter(x => !isNaN(x));
   const el = document.getElementById('overall-status');
   if (!scores.length) { el.textContent = 'Insira as notas acima'; el.className=''; return; }
   const passing = scores.filter(x=>x>=PASS).length;
   const failing = scores.filter(x=>x<PASS).length;
-  if (failing === 0 && scores.length === 4) {
-    el.textContent = '✓ Aprovado em todas as 4 disciplinas!';
+  if (failing === 0 && scores.length === 5) {
+    el.textContent = '✓ Aprovado em todas as 5 disciplinas!';
     el.style.color = 'var(--pass)';
   } else if (failing > 0) {
     el.textContent = `⚠ ${failing} disciplina${failing>1?'s':''} abaixo de 6,0`;
     el.style.color = 'var(--fail)';
   } else {
-    el.textContent = `${passing} de 4 disciplinas calculadas`;
+    el.textContent = `${passing} de 5 disciplinas calculadas`;
     el.style.color = 'var(--accent2)';
   }
 }
@@ -796,7 +847,8 @@ const IDS = [
   'eco-id11a','eco-id11b','eco-id12','eco-recra1',
   'eco-id21','eco-id21rp','eco-id22','eco-id22re',
   'gp-ra1','gp-ra2','gp-ra3',
-  'osl-1','osl-2','osl-3','osl-4','osl-5','osl-6'
+  'osl-1','osl-2','osl-3','osl-4','osl-5','osl-6',
+  'ric-ra1','ric-ra2'
 ];
 
 function save() {
@@ -815,14 +867,14 @@ function load() {
       if (data[id]) document.getElementById(id).value = data[id];
     });
   } catch(e) {}
-  calcIA(); calcEco(); calcGP(); calcOSL();
+  calcIA(); calcEco(); calcGP(); calcOSL(); calcRIC();
 }
 
 function clearAll() {
   if (!confirm('Limpar todos os dados salvos?')) return;
   localStorage.removeItem(STORAGE_KEY);
   IDS.forEach(id => document.getElementById(id).value = '');
-  calcIA(); calcEco(); calcGP(); calcOSL();
+  calcIA(); calcEco(); calcGP(); calcOSL(); calcRIC();
 }
 
 load();
